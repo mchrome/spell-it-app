@@ -32,9 +32,17 @@ services:
   worker:
     build:
       context: .
+      dockerfile: Dockerfile-pytorch
     hostname: worker
     entrypoint: celery
     command: -A celery_app.app worker --loglevel=info
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     volumes:
       - ./spell_it_app:/spell_it_app
     # "links = Legacy feature" https://docs.docker.com/compose/compose-file/compose-file-v3/#links 
