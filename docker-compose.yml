@@ -32,7 +32,7 @@ services:
   worker:
     build:
       context: .
-      dockerfile: Dockerfile-pytorch
+      dockerfile: Dockerfile-worker
     hostname: worker
     entrypoint: celery
     command: -A celery_app.app worker --loglevel=info

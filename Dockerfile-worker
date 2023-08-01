@@ -1,15 +1,15 @@
 FROM pytorch/pytorch:latest
 
-COPY requirements.txt /temp/requirements.txt
+COPY requirements-worker.txt /temp/requirements-worker.txt
 COPY spell_it_app /spell_it_app
 WORKDIR /spell_it_app
 EXPOSE 8000
 
 RUN apt update
-RUN apt install -y postgresql-client
+RUN apt install -y postgresql-client git
 # RUN apt install postgresql-client build-base postgresql-dev git
 
-RUN pip install -v -r /temp/requirements.txt
+RUN pip install -v -r /temp/requirements-worker.txt
 
 RUN adduser --disabled-password default-user
 

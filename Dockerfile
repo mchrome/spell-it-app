@@ -5,7 +5,7 @@ COPY spell_it_app /spell_it_app
 WORKDIR /spell_it_app
 EXPOSE 8000
 
-RUN apk add postgresql-client build-base postgresql-dev git
+RUN apk add postgresql-client build-base postgresql-dev
 
 RUN pip install -v -r /temp/requirements.txt
 
