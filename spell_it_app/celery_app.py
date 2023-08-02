@@ -13,9 +13,8 @@ app.autodiscover_tasks()
 
 if os.getenv("IS_CELERY_WORKER") == "1":
     # download and load all models
-    print("IS_CELERY_WORKER")
-    #from bark import preload_models
-    #preload_models(text_use_small=True, coarse_use_small=True, fine_use_small=True)
+    from bark import preload_models
+    preload_models(text_use_small=True, coarse_use_small=True, fine_use_small=True)
 
 @app.task()
 def debug_task():
