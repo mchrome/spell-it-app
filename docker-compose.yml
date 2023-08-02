@@ -45,6 +45,8 @@ services:
               capabilities: [gpu]
     volumes:
       - ./spell_it_app:/spell_it_app
+    environment:
+      - IS_CELERY_WORKER=1
     # "links = Legacy feature" https://docs.docker.com/compose/compose-file/compose-file-v3/#links 
     links:
       - redis
