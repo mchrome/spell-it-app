@@ -1,6 +1,6 @@
 FROM pytorch/pytorch:latest
 
-COPY requirements-worker.txt /temp/requirements-worker.txt
+COPY pip-requirements/requirements-worker.txt /temp/requirements-worker.txt
 COPY spell_it_app /spell_it_app
 WORKDIR /spell_it_app
 EXPOSE 8000

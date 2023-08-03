@@ -1,7 +1,10 @@
 *.sqlite3
 datasets/
 **/migrations/
-
+*.wav
+tts_models/*
+spell_it_app/nix/
+spell_it_app/nix-tts/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

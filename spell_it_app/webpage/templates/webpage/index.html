@@ -1,0 +1,12 @@
+{% load static %}
+
+<body>
+
+    <figure>
+        <figcaption>Generated audio:</figcaption>
+        <audio controls src="{% static 'webpage/audio/'%}{{audio_path}}">
+          <a href="{% static 'webpage/audio/'%}{{audio_path}}"> Download audio </a>
+        </audio>
+      </figure>
+
+</body>

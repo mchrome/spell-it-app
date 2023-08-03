@@ -2,6 +2,7 @@ services:
   web-app:
     build:
       context: .
+      dockerfile: ./dockerfiles/Dockerfile
     ports:
       - "8000:8000"
     volumes:
@@ -32,7 +33,7 @@ services:
   worker:
     build:
       context: .
-      dockerfile: Dockerfile-worker
+      dockerfile: ./dockerfiles/Dockerfile-worker-nix
     hostname: worker
     entrypoint: celery
     command: -A celery_app.app worker --loglevel=info
@@ -45,6 +46,7 @@ services:
               capabilities: [gpu]
     volumes:
       - ./spell_it_app:/spell_it_app
+      - ./tts_models:/tts_models
     environment:
       - IS_CELERY_WORKER=1
     # "links = Legacy feature" https://docs.docker.com/compose/compose-file/compose-file-v3/#links 
@@ -52,3 +54,18 @@ services:
       - redis
     depends_on:
       - redis
+
+  flower:
+      build:
+        context: .
+      hostname: flower
+      entrypoint: celery
+      command: -A celery_app.app flower
+      volumes:
+        - ./service:/service
+      links:
+        - redis
+      depends_on:
+        - redis
+      ports:
+        - "5555:5555"

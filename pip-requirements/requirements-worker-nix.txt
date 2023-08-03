@@ -1,0 +1,9 @@
+Django==4.2.2
+djangorestframework==3.14.0
+psycopg==3.1.9
+celery[redis]==5.3.1
+flower==1.2.0
+numpy
+scipy==1.11.1
+onnxruntime
+phonemizer==2.2.1

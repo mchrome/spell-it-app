@@ -13,8 +13,9 @@ app.autodiscover_tasks()
 
 if os.getenv("IS_CELERY_WORKER") == "1":
     # download and load all models
-    from bark import preload_models
-    preload_models(text_use_small=True, coarse_use_small=True, fine_use_small=True)
+    #from bark import preload_models
+    #preload_models(text_use_small=True, coarse_use_small=True, fine_use_small=True)
+    pass
 
 @app.task()
 def debug_task():
@@ -32,10 +33,21 @@ def bark_tts():
     from scipy.io.wavfile import write as write_wav
     # generate audio from text
     text_prompt = """
-        Hello, my name is Suno. And, uh — and I like pizza. [laughs] 
-        But I also have other interests such as playing tic tac toe.
+        Hello Hello Hello
     """
     audio_array = generate_audio(text_prompt)
 
     # save audio to disk
     write_wav("bark_generation.wav", SAMPLE_RATE, audio_array)
+
+@app.task()
+def nix_tts():
+    from nix.models.TTS import NixTTSInference
+    from scipy.io.wavfile import write as write_wav
+    # Initiate Nix-TTS
+    nix = NixTTSInference(model_dir = "/tts_models/nix-ljspeech-deterministic-v0.1")
+    # Tokenize input text
+    c, c_length, phoneme = nix.tokenize("Born to multiply, born to gaze into night skies.")
+    # Convert text to raw speech
+    xw = nix.vocalize(c, c_length)
+    write_wav("nix_generated.wav", 22050, xw)
