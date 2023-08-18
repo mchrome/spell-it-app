@@ -37,17 +37,22 @@ services:
     hostname: worker
     entrypoint: celery
     command: -A celery_app.app worker --loglevel=info
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
     volumes:
       - ./spell_it_app:/spell_it_app
       - ./tts_models:/tts_models
     environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
       - IS_CELERY_WORKER=1
     # "links = Legacy feature" https://docs.docker.com/compose/compose-file/compose-file-v3/#links 
     links:

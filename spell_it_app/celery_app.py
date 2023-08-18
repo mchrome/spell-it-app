@@ -1,8 +1,9 @@
 import os
 import time
-
+import io
 from celery import Celery
 from django.conf import settings
+from django.core.files import File
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'spell_it_app.settings')
 
@@ -12,10 +13,10 @@ app.conf.broker_url = settings.CELERY_BROKER_URL
 app.autodiscover_tasks()
 
 if os.getenv("IS_CELERY_WORKER") == "1":
-    # download and load all models
-    #from bark import preload_models
-    #preload_models(text_use_small=True, coarse_use_small=True, fine_use_small=True)
-    pass
+    from nix.models.TTS import NixTTSInference
+    from scipy.io.wavfile import write as write_wav
+    # Initiate Nix-TTS
+    nix = NixTTSInference(model_dir = "/tts_models/nix-ljspeech-deterministic-v0.1")
 
 @app.task()
 def debug_task():
@@ -42,12 +43,28 @@ def bark_tts():
 
 @app.task()
 def nix_tts():
-    from nix.models.TTS import NixTTSInference
-    from scipy.io.wavfile import write as write_wav
-    # Initiate Nix-TTS
-    nix = NixTTSInference(model_dir = "/tts_models/nix-ljspeech-deterministic-v0.1")
     # Tokenize input text
     c, c_length, phoneme = nix.tokenize("Born to multiply, born to gaze into night skies.")
     # Convert text to raw speech
     xw = nix.vocalize(c, c_length)
     write_wav("nix_generated.wav", 22050, xw)
+
+@app.task()
+def update_tts_audio(pk):
+    from tts.models import Word
+
+    word = Word.objects.get(pk=pk)
+    c, c_length, phoneme = nix.tokenize(word.text)
+    xw = nix.vocalize(c, c_length)
+
+    save_dir_path = os.path.join("tts_audio/words/",str(word.pk))
+    os.makedirs(os.path.join("media",save_dir_path))
+    write_wav(os.path.join("media",save_dir_path, "nix_generated.wav"), 22050, xw)
+
+    
+    word.audio_is_generated = True
+    word.audio.name = os.path.join(save_dir_path, "nix_generated.wav")
+    word.save(skip_audio_check=True)
+
+    
+    
