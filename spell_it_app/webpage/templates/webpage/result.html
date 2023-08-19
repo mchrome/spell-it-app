@@ -1,0 +1,9 @@
+{% load static %}
+
+<body>
+    {{ result_text }}
+    <br>
+    <form action="{% url 'webpage:index' %}" method="get">
+        <input type="submit" value="Next">
+    </form>
+</body>

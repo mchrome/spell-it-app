@@ -3,10 +3,15 @@
 <body>
 
     <figure>
-        <figcaption>{{ random_word.text }}:</figcaption>
-        <audio controls src="{{ random_word.audio.url }}">
-          <a href="{{ random_word.audio.url }}"> Download audio </a>
-        </audio>
-      </figure>
-
+      <figcaption>{{ random_word.text }}:</figcaption>
+      <audio controls src="{{ random_word.audio.url }}">
+        <a href="{{ random_word.audio.url }}"> Download audio </a>
+      </audio>
+    </figure>
+    
+    <form action="{% url 'webpage:result' random_word.id %}" method="post">
+      {% csrf_token %}  
+      <input type="text" name="answer">
+      <input type="submit" value="Submit">
+    </form>
 </body>
