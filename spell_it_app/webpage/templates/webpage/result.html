@@ -1,9 +1,19 @@
 {% load static %}
 
 <body>
-    {{ result_text }}
-    <br>
-    <form action="{% url 'webpage:index' %}" method="get">
-        <input type="submit" value="Next">
-    </form>
+    <div class="box">
+        <div>
+            {{ result_text }}
+            <br>
+            {% if correct_answer and user_answer %}
+                Correct answer: {{ correct_answer }}
+                <br>
+                Your answer: {{ user_answer }}
+                <br>
+            {% endif %}
+            <form action="{% url 'webpage:index' %}" method="get">
+                <input type="submit" value="Next">
+            </form>
+        </div>
+    </div>
 </body>

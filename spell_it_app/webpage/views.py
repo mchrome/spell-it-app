@@ -19,11 +19,21 @@ def index(request):
     return render(request=request, template_name="webpage/index.html", context=context)
 
 def submit(request, word_id):
-    if request.POST["answer"] == Word.objects.get(pk=word_id).text:
-        result_text = "Correct!"
+    
+    correct_answer = Word.objects.get(pk=word_id).text
+    user_answer = request.POST["answer"]
+
+    if  user_answer == correct_answer:
+        submit_context = {
+            "result_text": "Correct!",
+        }
     else:
-        result_text = "Incorrect"
+        submit_context = {
+            "result_text": "Incorrect",
+            "correct_answer": correct_answer,
+            "user_answer": user_answer,
+        }
 
     return render(request=request, 
                   template_name="webpage/result.html", 
-                  context={"result_text": result_text})
+                  context=submit_context)
