@@ -1,17 +1,29 @@
 {% load static %}
 
-<body>
+<link rel="stylesheet" href="{% static 'webpage/style.css' %}">
 
-    <figure>
-      <figcaption>{{ random_word.text }}:</figcaption>
+<body>
+  <div class="box">
+
+    <div>
       <audio controls src="{{ random_word.audio.url }}">
         <a href="{{ random_word.audio.url }}"> Download audio </a>
       </audio>
-    </figure>
+    </div>
     
-    <form action="{% url 'webpage:result' random_word.id %}" method="post">
-      {% csrf_token %}  
-      <input type="text" name="answer">
-      <input type="submit" value="Submit">
-    </form>
+    <div>
+      <form action="{% url 'webpage:result' random_word.id %}" method="post">
+        {% csrf_token %}  
+        <input type="text" name="answer">
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+    
+    <div>
+      <a href="{% url 'webpage:index'%}">View collections</a>
+      <a href="{% url 'webpage:index'%}">Upload collections</a>
+    </div>
+
+  </div>
+
 </body>
