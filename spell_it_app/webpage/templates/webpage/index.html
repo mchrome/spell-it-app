@@ -6,13 +6,15 @@
   <div class="box">
 
     <div>
-      <audio controls src="{{ random_word.audio.url }}">
-        <a href="{{ random_word.audio.url }}"> Download audio </a>
+      A random sentence from collection "{{ collection_name }}"
+      <br>
+      <audio controls src="{{ random_sentence.audio.url }}">
+        <a href="{{ random_sentence.audio.url }}"> Download audio </a>
       </audio>
     </div>
     
     <div>
-      <form action="{% url 'webpage:result' random_word.id %}" method="post">
+      <form action="{% url 'webpage:result' random_sentence.id %}" method="post">
         {% csrf_token %}  
         <input type="text" name="answer">
         <input type="submit" value="Submit">
@@ -21,7 +23,7 @@
     
     <div>
       <a href="{% url 'webpage:index'%}">View collections</a>
-      <a href="{% url 'webpage:index'%}">Upload collections</a>
+      <a href="{% url 'webpage:upload_collection'%}">Upload collection</a>
     </div>
 
   </div>

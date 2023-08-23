@@ -1,0 +1,24 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'webpage/style.css' %}">
+
+<body>
+  <div class="box">
+    
+    <div>
+      <form action="{% url 'webpage:submit_collection' %}" method="post">
+        {% csrf_token %}
+        <p><label for="sentences">Type your sentences separated by newline characters here:</label></p>
+        <textarea id="sentences" name="sentences" rows="4" cols="50"></textarea>
+        <br>
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+    
+    <div>
+      <a href="{% url 'webpage:index'%}">Go back</a>
+    </div>
+
+  </div>
+
+</body>

@@ -1,26 +1,32 @@
 from django.shortcuts import render
 import random
-from tts.models import Word
+from tts.models import Sentence, SentenceCollection
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
+from celery_app import generate_collection
 
-# Create your views here.
 def index(request):
+    
+    # TODO: Optimize?
+    available_colllections = SentenceCollection.objects.all()
+    collection_count = len(available_colllections)
+    random_collection = available_colllections[random.randint(0,collection_count-1)]
 
-    available_words = Word.objects.all().filter(audio_is_generated=True)
+    available_sentences = random_collection.sentences.all()
+    sentence_count = len(available_sentences)
+    random_sentence = available_sentences[random.randint(0,sentence_count-1)]
 
-    word_count = available_words.count()
-    random_word = available_words[random.randint(0,word_count-1)]
-    #random_word_pk = available_words[random_word].pk
 
     context = {
-        "random_word": random_word
+        "collection_name": random_collection.pk,
+        "random_sentence": random_sentence
     }
+
     return render(request=request, template_name="webpage/index.html", context=context)
 
-def submit(request, word_id):
+def result(request, sentence_id):
     
-    correct_answer = Word.objects.get(pk=word_id).text
+    correct_answer = Sentence.objects.get(pk=sentence_id).text
     user_answer = request.POST["answer"]
 
     if  user_answer == correct_answer:
@@ -37,3 +43,13 @@ def submit(request, word_id):
     return render(request=request, 
                   template_name="webpage/result.html", 
                   context=submit_context)
+
+
+def upload_collection(request):
+    return render(request=request, template_name="webpage/upload_collection.html")
+
+def submit_collection(request):
+
+    generate_collection.delay(request.POST["sentences"])
+
+    return HttpResponseRedirect(reverse("webpage:index"))

@@ -4,8 +4,8 @@ from . import views
 
 app_name = "webpage"
 urlpatterns = [
-    # ex: /webpage/
     path("", views.index, name="index"),
-    # ex: /webpage/16/submit
-    path("<int:word_id>/result", views.submit, name="result"),
+    path("result/<int:sentence_id>", views.result, name="result"),
+    path("upload_collection", views.upload_collection, name="upload_collection"),
+    path("submit_collection", views.submit_collection, name="submit_collection"),
 ]

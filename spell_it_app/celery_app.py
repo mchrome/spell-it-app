@@ -4,6 +4,8 @@ import io
 from celery import Celery
 from django.conf import settings
 from django.core.files import File
+import uuid 
+from django.db import transaction
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'spell_it_app.settings')
 
@@ -50,21 +52,38 @@ def nix_tts():
     write_wav("nix_generated.wav", 22050, xw)
 
 @app.task()
-def update_tts_audio(pk):
-    from tts.models import Word
+def generate_collection(user_input: str):
+    from tts.models import Sentence, SentenceCollection
 
-    word = Word.objects.get(pk=pk)
-    c, c_length, phoneme = nix.tokenize(word.text)
-    xw = nix.vocalize(c, c_length)
+    collection = SentenceCollection()
+    sentence_pk_list = []
+    
+    for text in user_input.split("\n"):
+        # Generate audio for the sentence
+        c, c_length, phoneme = nix.tokenize(text)
+        audio = nix.vocalize(c, c_length)
+        # Save the audio
+        save_dir_path = os.path.join("tts_audio/sentence/",str(uuid.uuid4()))
+        os.makedirs(os.path.join("media",save_dir_path))
+        write_wav(os.path.join("media",save_dir_path, "nix_generated.wav"), 22050, audio)
+        # Create model instance
+        # TODO: Save stripped copy of initial text
+        # to compare with when checking if user's guess is correct
+        sentence = Sentence(text=text)
+        sentence.audio.name = os.path.join(save_dir_path, "nix_generated.wav")
+        sentence.save()
+        sentence_pk_list.append(sentence.pk)
+    
+    print(sentence_pk_list)
 
-    save_dir_path = os.path.join("tts_audio/words/",str(word.pk))
-    os.makedirs(os.path.join("media",save_dir_path))
-    write_wav(os.path.join("media",save_dir_path, "nix_generated.wav"), 22050, xw)
+    with transaction.atomic():
+        collection.save()
+        collection.sentences.add(*sentence_pk_list)    
+        
+        
 
     
-    word.audio_is_generated = True
-    word.audio.name = os.path.join(save_dir_path, "nix_generated.wav")
-    word.save(skip_audio_check=True)
+        
 
     
     
