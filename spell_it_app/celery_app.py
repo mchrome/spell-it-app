@@ -68,7 +68,7 @@ def generate_collection(user_input: str):
         write_wav(os.path.join("media",save_dir_path, "nix_generated.wav"), 22050, audio)
         # Create model instance
         # TODO: Save stripped copy of initial text
-        # to compare with when checking if user's guess is correct
+        # to compare with, when checking if user's guess is correct
         sentence = Sentence(text=text)
         sentence.audio.name = os.path.join(save_dir_path, "nix_generated.wav")
         sentence.save()

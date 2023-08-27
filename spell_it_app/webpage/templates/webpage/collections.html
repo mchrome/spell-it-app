@@ -1,0 +1,30 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'webpage/style.css' %}">
+
+<body>
+    <div class="box">
+        {% if collections %}
+            {% for collection in collections %}
+            <div>
+                
+                {% if collection.name %}
+                    <h1>{{ collection.name }}</h1>
+                {% else %}
+                    <h1>Unnamed</h1>
+                {% endif %}
+                Sentence count: {{ collection.sentences.count }}
+                <br>
+                Collection complexity score: {{ collection.complexity_score }}
+                <br>
+                <a href="{% url 'webpage:index_selected_collection' collection.id %}"> Select </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No collections are available.</p>
+        {% endif %}
+  
+    </div>
+  
+</body>
+

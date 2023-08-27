@@ -36,6 +36,6 @@ class Sentence(models.Model):
 
 class SentenceCollection(models.Model):
 
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, default="Unnamed")
     sentences = models.ManyToManyField(Sentence)
     complexity_score = models.BigIntegerField(default=50)
