@@ -7,6 +7,9 @@ from celery_app import generate_collection
 
 def index(request, collection_id = None):
     
+    if SentenceCollection.objects.count() == 0:
+        return render(request=request, template_name="webpage/index.html")
+
     # TODO: Optimize?
     if collection_id is None:
         available_colllections = SentenceCollection.objects.all()
@@ -21,7 +24,7 @@ def index(request, collection_id = None):
 
 
     context = {
-        "collection_name": selected_collection.pk,
+        "collection_name": selected_collection.name,
         "random_sentence": random_sentence
     }
 

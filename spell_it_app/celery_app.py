@@ -12,6 +12,7 @@ from django.db.models import Sum, F
 from django.db.models.expressions import Window
 from django.db.models.functions import Rank
 from math import ceil
+import re
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'spell_it_app.settings')
 
@@ -57,6 +58,22 @@ def nix_tts():
     xw = nix.vocalize(c, c_length)
     write_wav("nix_generated.wav", 22050, xw)
 
+def decontracted(phrase):
+    # specific
+    phrase = re.sub(r"won\'t", "will not", phrase)
+    phrase = re.sub(r"can\'t", "can not", phrase)
+
+    # general
+    phrase = re.sub(r"n\'t", " not", phrase)
+    phrase = re.sub(r"\'re", " are", phrase)
+    phrase = re.sub(r"\'s", " is", phrase)
+    phrase = re.sub(r"\'d", " would", phrase)
+    phrase = re.sub(r"\'ll", " will", phrase)
+    phrase = re.sub(r"\'t", " not", phrase)
+    phrase = re.sub(r"\'ve", " have", phrase)
+    phrase = re.sub(r"\'m", " am", phrase)
+    return phrase
+
 @app.task()
 def generate_collection(user_input: str):
     from tts.models import Sentence, SentenceCollection, Word
@@ -72,9 +89,14 @@ def generate_collection(user_input: str):
     total_cnt_words = Word.objects.count()    
 
     for text in user_input.split("\n"):
+        
+        if len(text) == 0:
+            continue
+
+        text_dec = decontracted(text)
 
         # Add up frequencies of words in a sentence
-        no_punctuation_sentence = text.translate(str.maketrans('', '', string.punctuation))
+        no_punctuation_sentence = text_dec.translate(str.maketrans('', '', string.punctuation))
         split_sentence = no_punctuation_sentence.split()
         sentence_complexity = 0
         for word in split_sentence:
@@ -99,7 +121,7 @@ def generate_collection(user_input: str):
         sentence_complexity = 100 - int(sentence_complexity/total_cnt_words/len(split_sentence)*100)
 
         # Generate audio for the sentence
-        c, c_length, phoneme = nix.tokenize(text)
+        c, c_length, phoneme = nix.tokenize(text_dec)
         audio = nix.vocalize(c, c_length)
 
         # Save the audio
@@ -110,7 +132,7 @@ def generate_collection(user_input: str):
         # Create model instance
         # TODO: Save stripped copy of initial text
         # to compare with, when checking if user's guess is correct
-        sentence = Sentence(text=text)
+        sentence = Sentence(text=text_dec)
         sentence.audio.name = os.path.join(save_dir_path, "nix_generated.wav")
         sentence.complexity = sentence_complexity
         sentence.save()

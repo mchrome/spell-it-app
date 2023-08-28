@@ -5,6 +5,10 @@
 <body>
   <div class="box">
 
+    
+    
+    {% if random_sentence %}
+    
     <div>
       A random sentence from collection "{{ collection_name }}"
       <br>
@@ -12,7 +16,7 @@
         <a href="{{ random_sentence.audio.url }}"> Download audio </a>
       </audio>
     </div>
-    
+
     <div>
       <form action="{% url 'webpage:result' random_sentence.id %}" method="post">
         {% csrf_token %}  
@@ -20,6 +24,12 @@
         <input type="submit" value="Submit">
       </form>
     </div>
+
+    {% else %}
+    <div>
+      Can't find any sentence collections. Try adding some.
+    </div>
+    {% endif %}
     
     <div>
       <a href="{% url 'webpage:collections'%}">View collections</a>
