@@ -98,7 +98,10 @@ def generate_collection(user_input: str):
         # Create model instance
         # TODO: Save stripped copy of initial text
         # to compare with, when checking if user's guess is correct
-        sentence = Sentence(text=text_dec)
+        sentence = Sentence()
+        sentence.text = text
+        sentence.text_decontracted = text_dec
+        sentence.text_decontracted_no_punc = no_punctuation_sentence
         sentence.audio.name = os.path.join(save_dir_path, "nix_generated.wav")
         sentence.complexity = sentence_complexity
         sentence.save()
