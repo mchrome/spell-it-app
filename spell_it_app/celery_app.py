@@ -27,36 +27,6 @@ if os.getenv("IS_CELERY_WORKER") == "1":
     # Initiate Nix-TTS
     nix = NixTTSInference(model_dir = "/tts_models/nix-ljspeech-deterministic-v0.1")
 
-@app.task()
-def debug_task():
-    time.sleep(5)
-    print('Hello form debug_task')
-
-@app.task()
-def check_cuda():
-    import torch
-    print('Cuda availability: ', torch.cuda.is_available())
-
-@app.task()
-def bark_tts():
-    from bark import SAMPLE_RATE, generate_audio
-    from scipy.io.wavfile import write as write_wav
-    # generate audio from text
-    text_prompt = """
-        Hello Hello Hello
-    """
-    audio_array = generate_audio(text_prompt)
-
-    # save audio to disk
-    write_wav("bark_generation.wav", SAMPLE_RATE, audio_array)
-
-@app.task()
-def nix_tts():
-    # Tokenize input text
-    c, c_length, phoneme = nix.tokenize("Born to multiply, born to gaze into night skies.")
-    # Convert text to raw speech
-    xw = nix.vocalize(c, c_length)
-    write_wav("nix_generated.wav", 22050, xw)
 
 def decontracted(phrase):
     # specific
@@ -83,8 +53,6 @@ def generate_collection(user_input: str):
     
     complexity_sum = 0
     collection_word_count = 0
-    # total_word_occurance = Word.objects.all().aggregate(Sum("count_frequency"))
-    # total_word_occurance = total_word_occurance["count_frequency__sum"]
 
     total_cnt_words = Word.objects.count()    
 
@@ -100,8 +68,6 @@ def generate_collection(user_input: str):
         split_sentence = no_punctuation_sentence.split()
         sentence_complexity = 0
         for word in split_sentence:
-
-            # word_obj = Word.objects.filter(text=word).first()
 
             word_obj = Word.objects.filter(text=word).annotate(
                 rank=Window(
