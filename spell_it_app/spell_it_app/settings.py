@@ -42,7 +42,8 @@ INSTALLED_APPS = [
 
     # Project apps
     'tts',
-    'webpage'
+    'webpage',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
