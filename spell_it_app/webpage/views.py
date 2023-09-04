@@ -32,10 +32,14 @@ def index(request, collection_id = None):
 
 def result(request, sentence_id):
     
-    correct_answer = Sentence.objects.get(pk=sentence_id).text
+    correct_answer = [
+        Sentence.objects.get(pk=sentence_id).text,
+        Sentence.objects.get(pk=sentence_id).text_decontracted,
+        Sentence.objects.get(pk=sentence_id).text_decontracted_no_punc
+    ]
     user_answer = request.POST["answer"]
 
-    if  user_answer == correct_answer:
+    if user_answer in correct_answer:
         submit_context = {
             "result_text": "Correct!",
         }
@@ -56,7 +60,7 @@ def upload_collection(request):
 
 def submit_collection(request):
 
-    generate_collection.delay(request.POST["sentences"])
+    generate_collection.delay(request.POST["collection_name"] ,request.POST["sentences"])
 
     return HttpResponseRedirect(reverse("webpage:index"))
 

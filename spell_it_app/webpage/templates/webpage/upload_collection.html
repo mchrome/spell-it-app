@@ -8,6 +8,8 @@
     <div>
       <form action="{% url 'webpage:submit_collection' %}" method="post">
         {% csrf_token %}
+        <p><label for="collection_name">Collection name:</label></p>
+        <input type="text" name="collection_name">
         <p><label for="sentences">Type your sentences separated by newline characters here:</label></p>
         <textarea id="sentences" name="sentences" rows="4" cols="50"></textarea>
         <br>

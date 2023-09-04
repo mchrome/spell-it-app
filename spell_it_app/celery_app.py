@@ -45,7 +45,7 @@ def decontracted(phrase):
     return phrase
 
 @app.task()
-def generate_collection(user_input: str):
+def generate_collection(collection_name: str, input_sentence: str):
     from tts.models import Sentence, SentenceCollection, Word
 
     collection = SentenceCollection()
@@ -56,7 +56,7 @@ def generate_collection(user_input: str):
 
     total_cnt_words = Word.objects.count()    
 
-    for text in user_input.split("\n"):
+    for text in input_sentence.split("\n"):
         
         if len(text) == 0:
             continue
@@ -110,6 +110,7 @@ def generate_collection(user_input: str):
     print(sentence_pk_list)
 
     with transaction.atomic():
+        collection.name = collection_name
         collection.complexity_score = 100 - int(complexity_sum/total_cnt_words/collection_word_count*100)
         collection.save()
         collection.sentences.add(*sentence_pk_list)    
