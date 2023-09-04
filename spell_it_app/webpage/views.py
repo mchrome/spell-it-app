@@ -5,6 +5,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from celery_app import generate_collection, decontracted
 import string
+from .forms import SentenceCollectionForm
 
 def index(request, collection_id = None):
     
@@ -59,14 +60,20 @@ def result(request, sentence_id):
                   context=submit_context)
 
 
-def upload_collection(request):
-    return render(request=request, template_name="webpage/upload_collection.html")
+def create_collection(request):
+    form = SentenceCollectionForm()
+    context = {'form': form}
+    return render(request=request,
+                   template_name="webpage/upload_collection.html",
+                   context=context)
 
-def submit_collection(request):
 
-    generate_collection.delay(request.POST["collection_name"] ,request.POST["sentences"])
+def submit_create_collection(request):
+
+    generate_collection.delay(request.POST["name"] ,request.POST["sentences"])
 
     return HttpResponseRedirect(reverse("webpage:index"))
+
 
 def collections(request):
 
