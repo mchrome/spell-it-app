@@ -3,7 +3,8 @@ import random
 from tts.models import Sentence, SentenceCollection
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
-from celery_app import generate_collection
+from celery_app import generate_collection, decontracted
+import string
 
 def index(request, collection_id = None):
     
@@ -32,14 +33,17 @@ def index(request, collection_id = None):
 
 def result(request, sentence_id):
     
-    correct_answer = [
-        Sentence.objects.get(pk=sentence_id).text,
-        Sentence.objects.get(pk=sentence_id).text_decontracted,
-        Sentence.objects.get(pk=sentence_id).text_decontracted_no_punc
-    ]
-    user_answer = request.POST["answer"]
+    
 
-    if user_answer in correct_answer:
+    sentence = Sentence.objects.get(pk=sentence_id)
+    correct_answer = sentence.text_decontracted_no_punc
+    correct_answer = correct_answer.lower().strip()
+    
+    user_answer = request.POST["answer"].lower().strip()
+    user_answer = decontracted(user_answer)
+    user_answer = user_answer.translate(str.maketrans('', '', string.punctuation))
+
+    if user_answer == correct_answer:
         submit_context = {
             "result_text": "Correct!",
         }
